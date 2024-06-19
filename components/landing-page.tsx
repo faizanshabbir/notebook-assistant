@@ -17,11 +17,14 @@ To read more about using these font, please visit the Next.js documentation:
 - App Directory: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
+'use client';
+
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { JSX, SVGProps } from "react"
+import { Client, Databases, ID } from "appwrite";
 import './styles.css'
 
 export function LandingPage() {
@@ -69,7 +72,7 @@ export function LandingPage() {
                   >
                     Get Started
                   </Link>
-                  <form className="flex gap-2 min-[400px]:flex-row">
+                  <form onSubmit={HandleEmailFormSubmit} className="flex gap-2 min-[400px]:flex-row">
                     <Input type="email" placeholder="Enter your email" className="max-w-lg flex-1" />
                     <Button type="submit">Start a Free Trial Today</Button>
                   </form>
@@ -322,4 +325,32 @@ function NotebookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) 
       <path d="M16 2v20" />
     </svg>
   )
+}
+
+function HandleEmailFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
+  const userEmail = emailInput.value;
+  Subscribe(userEmail);
+}
+
+function Subscribe(userEmail: String) {
+  // TODO: Add email validation
+
+  const client = new Client()
+  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setProject('66730c6c0031cd3603be');
+  const databases = new Databases(client);
+  const promise = databases.createDocument(
+    '66733148003baa67c89e',
+    '6673317b0034acc1adbb',
+    ID.unique(),
+    {email_address: userEmail}
+  );
+  promise.then(function (response) {
+      console.log(response);
+  }, function (error) {
+      console.log(error);
+  });
 }
