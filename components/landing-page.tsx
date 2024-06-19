@@ -21,6 +21,7 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { JSX, SVGProps } from "react"
 
 export function LandingPage() {
   return (
@@ -278,7 +279,7 @@ export function LandingPage() {
   )
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -298,7 +299,7 @@ function CheckIcon(props) {
 }
 
 
-function NotebookIcon(props) {
+function NotebookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
