@@ -26,6 +26,7 @@ import { Card } from "@/components/ui/card"
 import { JSX, SVGProps } from "react"
 import { Client, Databases, ID } from "appwrite";
 import './styles.css'
+import conf from '@/conf/config'
 
 export function LandingPage() {
   return (
@@ -337,14 +338,16 @@ function HandleEmailFormSubmit(event: React.FormEvent<HTMLFormElement>) {
 
 function Subscribe(userEmail: String) {
   // TODO: Add email validation
+  console.log("HELLO")
+  console.log(conf.APPWRITE_PROJECT_ID)
 
   const client = new Client()
   .setEndpoint('https://cloud.appwrite.io/v1')
-  .setProject('66730c6c0031cd3603be');
+  .setProject(conf.APPWRITE_PROJECT_ID);
   const databases = new Databases(client);
   const promise = databases.createDocument(
-    '66733148003baa67c89e',
-    '6673317b0034acc1adbb',
+    conf.APPWRITE_DATABASE_ID,
+    conf.APPWRITE_COLLECTION_ID,
     ID.unique(),
     {email_address: userEmail}
   );
