@@ -19,9 +19,10 @@ To read more about using these font, please visit the Next.js documentation:
 **/
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Input, InputGroup, InputGroupSuffix } from "@/components/ui/input"
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import './authstyles.css'
+import { JSX, SVGProps } from "react"
 
 export function Registration() {
   return (
@@ -58,7 +59,7 @@ export function Registration() {
   )
 }
 
-function EyeIcon(props) {
+function EyeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
