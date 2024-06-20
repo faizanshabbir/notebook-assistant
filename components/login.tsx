@@ -17,43 +17,68 @@ To read more about using these font, please visit the Next.js documentation:
 - App Directory: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
+'use client';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import './authstyles.css'
-import { JSX, SVGProps } from "react"
+import { JSX, SVGProps, useState } from "react"
+import conf from "@/conf/config"
+import { Client, Account, ID, Models } from "appwrite"
+import { useRouter } from "next/navigation";
 
 export function Login() {
+  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const email = event.target.elements.email.value;
+    const password = event.target.elements.password.value;
+    // TODO: only login if session is already not active?? or maybe they cant even go to login page?
+    if (email && password) {
+      const session = await loginUser(email, password);
+      if (session) {
+        console.log("Logged in")
+      }
+    }
+  }
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>Sign in with your email and password</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="name@example.com" required />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <div>
-            <Input id="password" type="password" placeholder="••••••••" required minLength={8} />
+      <form onSubmit={handleSubmit}>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="name@example.com" required />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">Password</Label>
             <div>
-              <Button variant="ghost" size="sm">
-                <EyeIcon className="h-4 w-4" />
-                <span className="sr-only">Show password</span>
-              </Button>
+              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" required minLength={8} />
+              <div>
+                <Button variant="ghost" type="button" size="sm" onClick={toggleShowPassword}>
+                  <EyeIcon className="h-4 w-4" />
+                  <span className="sr-only">Show password</span>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-      </CardFooter>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full">
+            Login
+          </Button>
+        </CardFooter>
+      </form>
     </Card>
   )
 }
@@ -76,4 +101,24 @@ function EyeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       <circle cx="12" cy="12" r="3" />
     </svg>
   )
+}
+
+async function loginUser(email: string, password: string): Promise<Models.Session> {
+  console.log("HI")
+  const client = new Client()
+      .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+      .setProject(conf.APPWRITE_PROJECT_ID); // Your project ID
+
+  const account = new Account(client);
+
+  const session = await account.createEmailPasswordSession(
+      email, // email
+      password // password
+  );
+  console.log(session);
+  return session
+  // if(session) {
+  //   router.push('/')
+  // }
+  
 }
