@@ -29,6 +29,11 @@ import conf from '@/conf/config'
 import { Client, Account, ID } from "appwrite";
 import { useState } from "react";
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 export function Registration() {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -37,12 +42,11 @@ export function Registration() {
   }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const email = event.target.elements.email.value;
-    const password = event.target.elements.password.value;
+    const {email, password} = event.target as typeof event.target & FormData;
     if (email && password) {
       await createUser(email, password);
     }
-  };
+  }
   return (
     <Card className="w-full max-w-md">
       <CardHeader>

@@ -29,6 +29,11 @@ import conf from "@/conf/config"
 import { Client, Account, ID, Models } from "appwrite"
 import { useRouter } from "next/navigation";
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 export function Login() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -38,8 +43,8 @@ export function Login() {
   }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const email = event.target.elements.email.value;
-    const password = event.target.elements.password.value;
+
+    const {email, password} = event.target as typeof event.target & FormData;
     // TODO: only login if session is already not active?? or maybe they cant even go to login page?
     if (email && password) {
       const session = await loginUser(email, password);
