@@ -32,16 +32,14 @@ export class AppwriteService {
     }
 
     async login({ email, password }: LoginUserAccount): Promise<void> {
-        try {
 
-        } catch (error) 
     }
 
     async isLoggedIn() {
 
     }
 
-    asnyc getCurrentUIser() {
-
+    async getCurrentUser() {
+        // Method implementation here
     }
 }
