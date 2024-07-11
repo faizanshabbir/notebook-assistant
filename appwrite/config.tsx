@@ -18,7 +18,7 @@ export const account = new Account(appwriteClient)
 
 export class AppwriteService {
     // Create a new user account
-    async createUserAccount({ email, password }: CreateUserAccount): Promise<void> {
+    async createUserAccount({ email, password }: CreateUserAccount) {
         try {
             const userAccount = await account.create(ID.unique(), email, password)
             if (userAccount) {
@@ -31,15 +31,40 @@ export class AppwriteService {
         }
     }
 
-    async login({ email, password }: LoginUserAccount): Promise<void> {
-
+    async login({ email, password }: LoginUserAccount) {
+        try {
+            return await account.createEmailPasswordSession(email, password)
+        } catch (error) {
+            throw (error)
+        }
     }
 
     async isLoggedIn() {
+        try {
+            const data = await this.getCurrentUser();
+            return Boolean(data)
+        } catch (error) {
 
+        }
     }
 
     async getCurrentUser() {
-        // Method implementation here
+        try {
+            return account.get()
+        } catch (error) {
+            console.log("getcurrentUser error" + error)
+        }
+    }
+
+    async logout() {
+        try {
+            return await account.deleteSession("current")
+        } catch (error) {
+            console.log("logout error " + error)
+        }
     }
 }
+
+const appwriteService = new AppwriteService()
+
+export default appwriteService
