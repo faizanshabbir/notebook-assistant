@@ -24,10 +24,14 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import './authstyles.css'
-import { JSX, SVGProps } from "react"
+import React, { JSX, SVGProps } from "react"
 import conf from '@/conf/config'
 import { Client, Account, ID } from "appwrite";
 import { useState } from "react";
+import { setDefaultResultOrder } from "dns";
+import appwriteService from "@/appwrite/config";
+import useAuth from "@/context/useAuth";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   email: string;
@@ -35,7 +39,10 @@ interface FormData {
 }
 
 export function Registration() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
+  const {setAuthStatus} = useAuth()
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword)
@@ -47,13 +54,32 @@ export function Registration() {
       await createUser(email, password);
     }
   }
+  
+  const createUserSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("calling createUserSubmit")
+    event.preventDefault();
+    try {
+      const {email, password} = event.target as typeof event.target & FormData;
+      console.log(email)
+      console.log(password)
+      const userData = await appwriteService.createUserAccount({email, password});
+      console.log(userData);
+      if (userData) {
+        setAuthStatus(true)
+        // router.push('/dashboard')
+      }
+    } catch (error: any) {
+      setError(error.message)
+    }
+  }
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>Sign up with your email and password</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={createUserSubmit}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -62,7 +88,7 @@ export function Registration() {
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <div>
-              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" required minLength={8} />
+              <Input id="password" type={showPassword ? "text" : "password"} placeholder="" required minLength={8} />
               <div>
                 <Button variant="ghost" type="button" size="sm" onClick={toggleShowPassword}>
                   <EyeIcon className="h-4 w-4" />
