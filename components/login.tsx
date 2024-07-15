@@ -28,6 +28,8 @@ import { JSX, SVGProps, useState } from "react"
 import conf from "@/conf/config"
 import { Client, Account, ID, Models } from "appwrite"
 import { useRouter } from "next/navigation";
+import appwriteService from "@/appwrite/config";
+import useAuth from "@/context/useAuth";
 
 interface FormData {
   email: string;
@@ -37,6 +39,12 @@ interface FormData {
 export function Login() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  })
+  const {setAuthStatus} = useAuth()
+
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword)
@@ -53,22 +61,34 @@ export function Login() {
       }
     }
   }
+  
+  const loginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(formData.email)
+    console.log(formData.password)
+    const userData = await appwriteService.login(formData)
+    if (userData) {
+      setAuthStatus(true)
+      console.log("Logged in")
+    }
+  }
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>Sign in with your email and password</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={loginSubmit}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="name@example.com" required />
+            <Input id="email" type="email" placeholder="name@example.com" onChange={(e) => setFormData((prev) => ({...prev, email: e.target.value}))} required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <div>
-              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" required minLength={8} />
+              <Input id="password" type={showPassword ? "text" : "password"} placeholder="" onChange={(e) => setFormData((prev) => ({...prev, password: e.target.value}))} required minLength={8} />
               <div>
                 <Button variant="ghost" type="button" size="sm" onClick={toggleShowPassword}>
                   <EyeIcon className="h-4 w-4" />
