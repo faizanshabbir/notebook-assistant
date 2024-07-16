@@ -51,14 +51,6 @@ export function Registration() {
   const toggleShowPassword = () => {
     setShowPassword(!showPassword)
   }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const {email, password} = event.target as typeof event.target & FormData;
-    if (email && password) {
-      await createUser(email, password);
-    }
-  }
   
   const createUserSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     console.log("calling createUserSubmit")
@@ -73,7 +65,7 @@ export function Registration() {
       console.log(userData);
       if (userData) {
         setAuthStatus(true)
-        // router.push('/dashboard')
+        router.push('/dashboard')
       }
     } catch (error: any) {
       console.log("HIT ERROR")
@@ -136,21 +128,3 @@ function EyeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
-async function createUser(email: string, password: string): Promise<void> {
-
-  const client = new Client()
-      .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-      .setProject(conf.APPWRITE_PROJECT_ID); // Your project ID
-
-  const account = new Account(client);
-
-  const result = await account.create(
-      ID.unique(), // userId
-      email, // email
-      password, // password
-  );
-
-  console.log(result);
-}
-

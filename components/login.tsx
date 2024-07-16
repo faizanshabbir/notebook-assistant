@@ -39,6 +39,7 @@ interface FormData {
 export function Login() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -49,28 +50,26 @@ export function Login() {
   const toggleShowPassword = () => {
     setShowPassword(!showPassword)
   }
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
 
-    const {email, password} = event.target as typeof event.target & FormData;
-    // TODO: only login if session is already not active?? or maybe they cant even go to login page?
-    if (email && password) {
-      const session = await loginUser(email, password);
-      if (session) {
-        console.log("Logged in")
-      }
-    }
-  }
   
   const loginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(formData.email)
     console.log(formData.password)
-    const userData = await appwriteService.login(formData)
-    if (userData) {
-      setAuthStatus(true)
-      console.log("Logged in")
+    // const userData = await appwriteService.isLoggedIn()
+    // console.log(userData)
+    try {
+      const userData = await appwriteService.login(formData)
+      if (userData) {
+        setAuthStatus(true)
+        console.log("Logged in")
+      }
+      router.push('/dashboard')
+    } catch (error: any) {
+      console.log(error)
+      setError(error.message)
     }
+
   }
 
   return (
@@ -128,22 +127,3 @@ function EyeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   )
 }
 
-async function loginUser(email: string, password: string): Promise<Models.Session> {
-  console.log("HI")
-  const client = new Client()
-      .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-      .setProject(conf.APPWRITE_PROJECT_ID); // Your project ID
-
-  const account = new Account(client);
-
-  const session = await account.createEmailPasswordSession(
-      email, // email
-      password // password
-  );
-  console.log(session);
-  return session
-  // if(session) {
-  //   router.push('/')
-  // }
-  
-}
