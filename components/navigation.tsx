@@ -1,8 +1,10 @@
 import React from "react";
 import Link from 'next/link';
+import useAuth from "@/context/useAuth";
 
 
 export default function Navigation() {
+    const {authStatus} = useAuth(); 
     return (
         <nav className="ml-auto flex gap-4 sm:gap-6">
             <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
@@ -16,6 +18,9 @@ export default function Navigation() {
             </Link>
             <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
                 Contact
+            </Link>
+            <Link href={authStatus ? "/auth/logout": "/auth/login"} className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                {authStatus ? "Logout" : "Login"}
             </Link>
         </nav>
     );
