@@ -1,2 +1,3 @@
 TOADD:
  email verification
+ upon registration, the button should become greyed or something to let user know registration is happening

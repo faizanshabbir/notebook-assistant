@@ -38,7 +38,7 @@ interface FormData {
   password: string;
 }
 
-export function Registration() {
+export default function Registration() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")

@@ -36,7 +36,7 @@ interface FormData {
   password: string;
 }
 
-export function Login() {
+export default function Login() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
