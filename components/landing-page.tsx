@@ -23,13 +23,22 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { JSX, SVGProps } from "react"
+import { JSX, SVGProps, useEffect, useState } from "react"
 import { Client, Databases, ID } from "appwrite";
 import './styles.css'
 import conf from '@/conf/config'
 import Navigation from "@/components/navigation"
+import appwriteService from "@/appwrite/config";
+import useAuth from "@/context/useAuth";
+
 
 export function LandingPage() {
+  const {setAuthStatus} = useAuth()
+  useEffect(() => {
+    appwriteService.isLoggedIn().then((status) => {
+      setAuthStatus(true)
+    })
+  }, [])
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="px-4 lg:px-6 h-14 flex items-center">
