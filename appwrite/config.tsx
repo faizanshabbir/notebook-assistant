@@ -42,7 +42,12 @@ export class AppwriteService {
     async isLoggedIn() {
         try {
             const data = await this.getCurrentUser();
-            return Boolean(data)
+            console.log(data)
+            if (data) {
+                return true
+            } else { 
+                return false
+            }
         } catch (error) {
 
         }

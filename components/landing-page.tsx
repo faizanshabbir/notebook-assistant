@@ -33,12 +33,12 @@ import useAuth from "@/context/useAuth";
 
 
 export function LandingPage() {
-  const {setAuthStatus} = useAuth()
-  useEffect(() => {
-    appwriteService.isLoggedIn().then((status) => {
-      setAuthStatus(true)
-    })
-  }, [])
+  // const {setAuthStatus} = useAuth()
+  // useEffect(() => {
+  //   appwriteService.isLoggedIn().then((status) => {
+  //     setAuthStatus(true)
+  //   })
+  // }, [])
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="px-4 lg:px-6 h-14 flex items-center">
