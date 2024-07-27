@@ -11,8 +11,11 @@ export default function Navigation() {
         appwriteService.isLoggedIn().then((status) => {
             // TO BE FIXED, SET THE STATE OF STATUS]
             if (typeof status === "boolean") {
-              setAuthStatus(true)
+							setAuthStatus(true)
               setIsLoggedIn(true)
+            } else {
+							setAuthStatus(false)
+							setIsLoggedIn(false)
             }
         })
       }, [])

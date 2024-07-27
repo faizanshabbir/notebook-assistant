@@ -1,9 +1,10 @@
 import React from "react";
+import Dashboard from "@/components/dashboard"; // Import the Dashboard component
 
-export default function Dashboard() {
+export default function DashboardPage() {
     return (
         <div>
-            <h1>Dashboard</h1>
+            <Dashboard />
         </div>
     );
 }
