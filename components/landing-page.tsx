@@ -23,12 +23,22 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { JSX, SVGProps } from "react"
+import { JSX, SVGProps, useEffect, useState } from "react"
 import { Client, Databases, ID } from "appwrite";
 import './styles.css'
 import conf from '@/conf/config'
+import Navigation from "@/components/navigation"
+import appwriteService from "@/appwrite/config";
+import useAuth from "@/context/useAuth";
+
 
 export function LandingPage() {
+  // const {setAuthStatus} = useAuth()
+  // useEffect(() => {
+  //   appwriteService.isLoggedIn().then((status) => {
+  //     setAuthStatus(true)
+  //   })
+  // }, [])
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="px-4 lg:px-6 h-14 flex items-center">
@@ -36,20 +46,7 @@ export function LandingPage() {
           <NotebookIcon className="h-6 w-6" />
           <span className="sr-only">AI Notebook Assistant</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Features
-          </Link>
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Pricing
-          </Link>
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            About
-          </Link>
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Contact
-          </Link>
-        </nav>
+        <Navigation />
       </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">

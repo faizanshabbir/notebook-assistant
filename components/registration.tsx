@@ -24,45 +24,71 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import './authstyles.css'
-import { JSX, SVGProps } from "react"
+import React, { JSX, SVGProps } from "react"
 import conf from '@/conf/config'
 import { Client, Account, ID } from "appwrite";
 import { useState } from "react";
+import { setDefaultResultOrder } from "dns";
+import appwriteService from "@/appwrite/config";
+import useAuth from "@/context/useAuth";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   email: string;
   password: string;
 }
 
-export function Registration() {
+export default function Registration() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  })
+  const {setAuthStatus} = useAuth()
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword)
   }
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  
+  const createUserSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("calling createUserSubmit")
     event.preventDefault();
-    const {email, password} = event.target as typeof event.target & FormData;
-    if (email && password) {
-      await createUser(email, password);
+    try {
+      const {email, password} = event.target as typeof event.target & FormData;
+      console.log(email)
+      console.log(password)
+      console.log(formData.email)
+      console.log(formData.password)
+      const userData = await appwriteService.createUserAccount(formData);
+      console.log(userData);
+      if (userData) {
+        setAuthStatus(true)
+        router.push('/dashboard')
+      }
+    } catch (error: any) {
+      console.log("HIT ERROR")
+      setError(error.message)
     }
   }
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>Sign up with your email and password</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={createUserSubmit}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="name@example.com" required />
+            <Input id="email" type="email" placeholder="name@example.com" onChange={(e) => setFormData((prev) => ({...prev, email: e.target.value}))} required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <div>
-              <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" required minLength={8} />
+              <Input id="password" type={showPassword ? "text" : "password"} placeholder="" onChange={(e) => setFormData((prev) => ({...prev, password: e.target.value}))} required minLength={8} />
               <div>
                 <Button variant="ghost" type="button" size="sm" onClick={toggleShowPassword}>
                   <EyeIcon className="h-4 w-4" />
@@ -102,21 +128,3 @@ function EyeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
-async function createUser(email: string, password: string): Promise<void> {
-
-  const client = new Client()
-      .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-      .setProject(conf.APPWRITE_PROJECT_ID); // Your project ID
-
-  const account = new Account(client);
-
-  const result = await account.create(
-      ID.unique(), // userId
-      email, // email
-      password, // password
-  );
-
-  console.log(result);
-}
-
