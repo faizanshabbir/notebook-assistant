@@ -103,7 +103,7 @@ export default function Dashboard() {
                       id="upload-notebook"
                       type="file"
                       accept=".ipynb"
-                      onChange={handleUploadNotebook}
+                      // onChange={handleUploadNotebook}
                       className="hidden"
                     />
                   </div>
