@@ -2,3 +2,25 @@ TOADD:
  email verification
  upon registration, the button should become greyed or something to let user know registration is happening
  With failed pasword, should display "failed password or email" prompt
+
+
+ validate notebook format?
+ assume notebook format is correct?
+
+ write function that takes "upload" file and gets contents?
+
+ wherever we call claude or openai, we should be logging our users too so we can see who is using most.
+
+ Should we include a big textbox so people can paste their content there too? idk
+
+Notebook checks?
+- Check if notebook valid?
+- Check notebook extensions?
+
+ Playground for end to end testing:
+ - Create databricks account?
+ - Install jupyterlab?
+
+ Research? 
+ - Scrape python noteboos online?
+ - Read about vercel functions? https://vercel.com/docs/functions
