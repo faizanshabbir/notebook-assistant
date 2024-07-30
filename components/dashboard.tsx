@@ -19,7 +19,7 @@ To read more about using these font, please visit the Next.js documentation:
 **/
 "use client"
 
-import React, { useLayoutEffect, useState } from "react"
+import React, { useLayoutEffect, useState, ChangeEvent, FormEvent } from "react"
 import Link from "next/link"
 import Navigation from "../components/navigation"
 import AuthNavigation from "../components/auth-navigation"
@@ -28,10 +28,9 @@ import useAuth from "@/context/useAuth"
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const [uploadedNotebooks, setUploadedNotebooks] = useState([])
+  const [file, setFile] = useState<File | null>(null);
   const [usageCount, setUsageCount] = useState(0)
   const [username, setUsername] = useState("Some Name User")
-  const [history, setHistory] = useState([])
 
   const {authStatus, setAuthStatus} = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,20 +52,36 @@ export default function Dashboard() {
       })
     }, [])
 
-    
-  const handleUploadNotebook = (event: { target: { files: any[] } }) => {
-    const file = event.target.files[0]
-    // setUploadedNotebooks([...uploadedNotebooks, file])
-    setUsageCount(usageCount + 1)
-    console.log(`Uploading notebook ${file.name} to backend for processing`)
-    setTimeout(() => {
-      const processedNotebook = {
-        name: file.name,
-        output: `output_${file.name}.ipynb`,
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('File upload failed');
       }
-      // setHistory([...history, processedNotebook])
-    }, 2000)
-  }
+
+      const result = await response.json();
+      console.log('File contents:', result.contents);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     isLoggedIn && (
       <div className="flex flex-col min-h-[100dvh]">
@@ -99,13 +114,16 @@ export default function Dashboard() {
                     >
                       Upload Notebook
                     </label>
-                    <input
-                      id="upload-notebook"
-                      type="file"
-                      accept=".ipynb"
-                      // onChange={handleUploadNotebook}
-                      className="hidden"
-                    />
+                    <form onSubmit = {handleSubmit}>
+                      <input
+                        id="upload-notebook"
+                        type="file"
+                        // accept=".ipynb"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      <button type="submit">Upload</button>
+                    </form>
                   </div>
                 </div>
               </div>
