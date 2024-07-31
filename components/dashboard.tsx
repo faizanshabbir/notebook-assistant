@@ -76,6 +76,7 @@ export default function Dashboard() {
       }
 
       const result = await response.json();
+      console.log('File name:', result.filename);
       console.log('File contents:', result.contents);
     } catch (error) {
       console.error('Error:', error);
