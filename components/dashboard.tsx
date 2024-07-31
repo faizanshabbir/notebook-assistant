@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null);
+  const [filename, setFilename] = useState("")
   const [usageCount, setUsageCount] = useState(0)
   const [username, setUsername] = useState("Some Name User")
 
@@ -55,6 +56,7 @@ export default function Dashboard() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFile(event.target.files[0]);
+      setFilename(event.target.files[0].name)
     }
   };
 
@@ -125,6 +127,11 @@ export default function Dashboard() {
                       />
                       <button type="submit">Upload</button>
                     </form>
+                  </div>
+                  <div>
+                    {filename && (
+                      <p className="text-gray-500">Selected file: {filename}</p>
+                    )}
                   </div>
                 </div>
               </div>

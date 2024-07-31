@@ -37,6 +37,11 @@ export default function Navigation() {
             <Link href={isLoggedIn ? "/auth/logout": "/auth/login"} className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
                 {isLoggedIn ? "Logout" : "Login"}
             </Link>
+            {isLoggedIn && (
+                <Link href="/dashboard" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                    Dashboard
+                </Link>
+            )}
         </nav>
     );
 }
