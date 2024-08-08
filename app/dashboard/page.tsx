@@ -3,8 +3,8 @@ import Dashboard from "@/components/dashboard"; // Import the Dashboard componen
 
 export default function DashboardPage() {
     return (
-        <div>
+        <main className="flex justify-center">
             <Dashboard />
-        </div>
+        </main>
     );
 }

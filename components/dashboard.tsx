@@ -26,12 +26,17 @@ import AuthNavigation from "../components/auth-navigation"
 import appwriteService from "@/appwrite/config"
 import useAuth from "@/context/useAuth"
 import { useRouter } from "next/navigation";
+import { Triangle } from 'react-loader-spinner'
+import './styles.css'
+import { Result } from "postcss"
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null);
   const [filename, setFilename] = useState("")
   const [usageCount, setUsageCount] = useState(0)
   const [username, setUsername] = useState("Some Name User")
+  const [loading, setLoading] = useState(false)
+  const [notebook, setNotebook] = useState("")
 
   const {authStatus, setAuthStatus} = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,6 +58,31 @@ export default function Dashboard() {
       })
     }, [])
 
+  const fetchWithTimeout = async (
+    url: string,
+    options: RequestInit,
+    timeout: number = 8000
+  ): Promise<Response> => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    const fetchOptions = { ...options, signal };
+  
+    const fetchTimeout = setTimeout(() => {
+      controller.abort();
+    }, timeout);
+  
+    try {
+      const response = await fetch(url, fetchOptions);
+      clearTimeout(fetchTimeout);
+      return response;
+    } catch (error) {
+      if ((error as Error).name === 'AbortError') {
+        throw new Error('Request timed out');
+      }
+      throw error;
+    }
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFile(event.target.files[0]);
@@ -66,30 +96,68 @@ export default function Dashboard() {
 
     const formData = new FormData();
     formData.append('file', file);
-
+    // Show loading animation
+    setLoading(true);
     try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      // const response = await fetch('/api/upload', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+
+      const response = await fetchWithTimeout(
+        '/api/upload', {
+          method: 'POST',
+          body: formData,
+        },
+        90000
+      );
 
       if (!response.ok) {
-        throw new Error('File upload failed');
+        throw new Error('Error fetching assistant response!');
       }
 
       const result = await response.json();
       console.log('File name:', result.filename);
-      console.log('File contents:', result.contents);
+      console.log('Notebook', result.response);
+      setLoading(false);
+      setNotebook(result.response.notebook)
     } catch (error) {
       console.error('Error:', error);
+      setLoading(false);
     }
+  };
+
+  const downloadNotebook = () => {
+    console.log("Downloading notebook!!!")
+    console.log(notebook)
+    const blob = new Blob([JSON.stringify(notebook, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const newFileName = filename.split('.').slice(0, -1).join('.') + '-assistant.ipynb';
+    link.download = newFileName; // Name of the file to be downloaded
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Clean up the URL object
+  };
+
+  function DownloadAssistantNotebook() {
+    return (
+      <button
+        className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300 cursor-pointer"
+        onClick={downloadNotebook}
+      >
+        Download Assistant Notebook
+      </button>
+    )
   };
 
   return (
     isLoggedIn && (
       <div className="flex flex-col min-h-[100dvh]">
         <header className="px-4 lg:px-6 h-14 flex items-center">
-          <Link href="#" className="flex items-center justify-center" prefetch={false}>
+          <Link href="/" className="flex items-center justify-center" prefetch={false}>
             <NotebookIcon className="h-6 w-6" />
             <span className="sr-only">AI Notebook Assistant</span>
           </Link>
@@ -115,7 +183,7 @@ export default function Dashboard() {
                       htmlFor="upload-notebook"
                       className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300 cursor-pointer"
                     >
-                      Upload Notebook
+                      Select Notebook
                     </label>
                     <form onSubmit = {handleSubmit}>
                       <input
@@ -125,13 +193,22 @@ export default function Dashboard() {
                         onChange={handleFileChange}
                         className="hidden"
                       />
-                      <button type="submit">Upload</button>
+                      <button type="submit" className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300 cursor-pointer"
+                      >
+                        Upload Notebook
+                      </button>
                     </form>
                   </div>
                   <div>
                     {filename && (
                       <p className="text-gray-500">Selected file: {filename}</p>
                     )}
+                  </div>
+                  <div>
+                    {loading && <LoadingAnimation />}
+                  </div>
+                  <div>
+                    {notebook && <DownloadAssistantNotebook />}
                   </div>
                 </div>
               </div>
@@ -169,4 +246,16 @@ function NotebookIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGS
       <path d="M16 2v20" />
     </svg>
   )
+}
+
+function LoadingAnimation() {
+  return (<Triangle
+    visible={true}
+    height="80"
+    width="80"
+    color="#4fa94d"
+    ariaLabel="triangle-loading"
+    wrapperStyle={{}}
+    wrapperClass=""
+    />)
 }
