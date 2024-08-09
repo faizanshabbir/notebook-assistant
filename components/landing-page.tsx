@@ -28,21 +28,13 @@ import { Client, Databases, ID } from "appwrite";
 import './styles.css'
 import conf from '@/conf/config'
 import Navigation from "@/components/navigation"
-import appwriteService from "@/appwrite/config";
-import useAuth from "@/context/useAuth";
 
 
 export function LandingPage() {
-  // const {setAuthStatus} = useAuth()
-  // useEffect(() => {
-  //   appwriteService.isLoggedIn().then((status) => {
-  //     setAuthStatus(true)
-  //   })
-  // }, [])
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="px-4 lg:px-6 h-14 flex items-center">
-        <Link href="#" className="flex items-center justify-center" prefetch={false}>
+        <Link href="/" className="flex items-center justify-center" prefetch={false}>
           <NotebookIcon className="h-6 w-6" />
           <span className="sr-only">AI Notebook Assistant</span>
         </Link>
@@ -299,7 +291,6 @@ function CheckIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
 
 function NotebookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
