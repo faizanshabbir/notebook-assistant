@@ -65,7 +65,7 @@ export default function Dashboard() {
   ): Promise<Response> => {
     const controller = new AbortController();
     const { signal } = controller;
-    const fetchOptions = { ...options, signal };
+    const fetchOptions = { ...options, signal, keepalive: true };
   
     const fetchTimeout = setTimeout(() => {
       controller.abort();
@@ -98,12 +98,8 @@ export default function Dashboard() {
     formData.append('file', file);
     // Show loading animation
     setLoading(true);
+    setNotebook("");
     try {
-      // const response = await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-
       const response = await fetchWithTimeout(
         '/api/upload', {
           method: 'POST',
@@ -118,9 +114,12 @@ export default function Dashboard() {
 
       const result = await response.json();
       console.log('File name:', result.filename);
-      console.log('Notebook', result.response);
+      console.log('Notebook', result.nb_resp);
+      console.log('Initial result.response:', result.nb_resp);
+      console.log('Keys in result.response:', Object.keys(result.nb_resp));
       setLoading(false);
-      setNotebook(result.response.notebook)
+        // Additional logging to verify the structure of result.response
+      setNotebook(result.nb_resp)
     } catch (error) {
       console.error('Error:', error);
       setLoading(false);
@@ -130,7 +129,7 @@ export default function Dashboard() {
   const downloadNotebook = () => {
     console.log("Downloading notebook!!!")
     console.log(notebook)
-    const blob = new Blob([JSON.stringify(notebook, null, 2)], { type: 'application/json' });
+    const blob = new Blob([notebook], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -204,7 +203,7 @@ export default function Dashboard() {
                       <p className="text-gray-500">Selected file: {filename}</p>
                     )}
                   </div>
-                  <div>
+                  <div className="flex justify-center">
                     {loading && <LoadingAnimation />}
                   </div>
                   <div>
@@ -253,7 +252,7 @@ function LoadingAnimation() {
     visible={true}
     height="80"
     width="80"
-    color="#4fa94d"
+    color="#4a4a4a"
     ariaLabel="triangle-loading"
     wrapperStyle={{}}
     wrapperClass=""

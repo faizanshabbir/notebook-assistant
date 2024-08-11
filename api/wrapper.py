@@ -66,7 +66,7 @@ class NotebookClient():
                     "content": full_query,
                 }
             ],
-            model="gpt-4",
+            model="gpt-4o-mini",
         )
         return chat_completion.choices[0].message.content
     

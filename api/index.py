@@ -12,20 +12,17 @@ def hello_world():
 async def upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     nc = wrapper.NotebookClient()
-    tst = nc.initialize_client()
     print("OpenAI client initialized") #TODO REMOVE
     try:
         cleaned_notebook = nc.notebook_preprocessing(contents.decode('utf-8')) 
     except Exception as e:
         print("Unable to preprocess notebook: ", e)
     print("Notebook preprocessed")
-    print(cleaned_notebook)
     response = await test_call_ai(cleaned_notebook_text=cleaned_notebook)
-    return {"filename": file.filename, "response": response}
+    return {"filename": file.filename, "nb_resp": response}
 
-async def test_call_ai(cleaned_notebook_text) -> str:
+async def test_call_ai(cleaned_notebook_text):
     nc = wrapper.NotebookClient()
-    print(cleaned_notebook_text)
     response = await nc.make_request(cleaned_notebook_text)
-    print(response)
+    print("RESPONSE: " + response)
     return response
