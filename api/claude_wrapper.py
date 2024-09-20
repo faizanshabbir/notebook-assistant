@@ -11,19 +11,19 @@
 # clean response
 import os
 import json
+import anthropic
 from api import prompt
-from openai import OpenAI
 
-class NotebookClient():
+class NotebookClaudeClient():
     client = None
     prompt = prompt.prompt
 
     def __init__(self):
         self.client = self.initialize_client()
 
-    def initialize_client(self) -> OpenAI:
+    def initialize_client(self):
         # Initialize the OpenAI API client
-        client = OpenAI(api_key=os.environ.get("ANTHROPIC_API_KEY"),)
+        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"),)
         return client
     
     # This method will be used to preprocess the notebook before sending it to the API
@@ -59,16 +59,37 @@ class NotebookClient():
         print(self.prompt)
         full_query = self.prompt.format(notebook=cleaned_notebook)
         self.client
-        chat_completion = self.client.chat.completions.create(
+        message = self.client.messages.create(
+            model = 'claude-3-5-sonnet-20240620',
+            max_tokens=4096,
+            temperature=0,
+            system = self.prompt,
             messages=[
                 {
                     "role": "user",
-                    "content": full_query,
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": full_query,
+                        }
+                    ]
                 }
-            ],
-            model="gpt-4o-mini",
+            ]
         )
-        return chat_completion.choices[0].message.content
+
+        # message = self.client.messages.create(
+        #     messages=[
+        #         {
+        #             "role": "user",
+        #             "content": [
+        #                 "type": "text",
+        #                 "text": full_query,
+        #             ]
+        #         }
+        #     ],
+        #     model="claude-3-5-sonnet-20240620",
+        # )
+        return message.content[0].text
     
     def clean_response(self):
         pass
