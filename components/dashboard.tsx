@@ -19,7 +19,7 @@ To read more about using these font, please visit the Next.js documentation:
 **/
 "use client"
 
-import React, { useLayoutEffect, useState, ChangeEvent, FormEvent } from "react"
+import React, { useLayoutEffect, useState, useRef, ChangeEvent, FormEvent, useEffect } from "react"
 import Link from "next/link"
 import Navigation from "../components/navigation"
 import AuthNavigation from "../components/auth-navigation"
@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { Triangle } from 'react-loader-spinner'
 import './styles.css'
 import { Result } from "postcss"
+import lottie from 'lottie-web'
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null);
@@ -42,6 +43,19 @@ export default function Dashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const router = useRouter()
+
+  const loadingAnimationContainer = useRef(null)
+
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: loadingAnimationContainer.current,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/robotloadinganimation.json'
+    });
+  }, []);
+
 
   useLayoutEffect(() => {
       appwriteService.isLoggedIn().then((status) => {
@@ -149,6 +163,12 @@ export default function Dashboard() {
       >
         Download Assistant Notebook
       </button>
+    )
+  };
+
+  function LottieAnimation() {
+    return(
+      <div ref={loadingAnimationContainer}></div>
     )
   };
 

@@ -23,14 +23,36 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { JSX, SVGProps, useEffect, useState } from "react"
+import { JSX, SVGProps, useEffect, useState, useRef  } from "react"
 import { Client, Databases, ID } from "appwrite";
 import './styles.css'
 import conf from '@/conf/config'
 import Navigation from "@/components/navigation"
+import lottie from "lottie-web";
 
 
 export function LandingPage() {
+  const animationArrangeContainer = useRef(null);
+  const animationCodingContainer = useRef(null);
+
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: animationArrangeContainer.current,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/arrangeanimation.json'
+    });
+
+    lottie.loadAnimation({
+      container: animationCodingContainer.current,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/codinganimation.json'
+    });
+  }, []);
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="px-4 lg:px-6 h-14 flex items-center">
@@ -68,11 +90,7 @@ export function LandingPage() {
                   </form>
                 </div>
               </div>
-              <img
-                src="/placeholder.svg"
-                alt="Hero"
-                className="mx-auto aspect-square overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              />
+              <div ref={animationCodingContainer} className="mx-auto aspect-square overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"></div>
             </div>
           </div>
         </section>
@@ -131,11 +149,7 @@ export function LandingPage() {
                   </li>
                 </ul>
               </div>
-              <img
-                src="/placeholder.svg"
-                alt="Features"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-              />
+              <div ref={animationArrangeContainer} className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"></div>
             </div>
           </div>
         </section>
