@@ -3,24 +3,132 @@ TOADD:
  upon registration, the button should become greyed or something to let user know registration is happening
  With failed pasword, should display "failed password or email" prompt
 
-
- validate notebook format?
- assume notebook format is correct?
-
- write function that takes "upload" file and gets contents?
-
  wherever we call claude or openai, we should be logging our users too so we can see who is using most.
 
  Should we include a big textbox so people can paste their content there too? idk
 
 Notebook checks?
-- Check if notebook valid?
-- Check notebook extensions?
+- for now we will only accept ipynb formats since databricks can also export to that
+- ipynb also uses json to structure, so it makes it easy to parse and also ensure outputs are stripped.
+- Can add "copy" later on informing users that their outputs are stripped before being processed further by our assistant.
 
  Playground for end to end testing:
  - Create databricks account?
  - Install jupyterlab?
 
  Research? 
- - Scrape python noteboos online?
+ - Scrape python notebooks online?
  - Read about vercel functions? https://vercel.com/docs/functions
+ - learn about openai models and api
+ - create claude ai endpoint?
+
+
+
+ PROMPT:
+
+I will provide you with a python notebook formated as is in ipynb. Your job is to make the notebook production ready or to "productionize" it.
+To "productionize" this notebook, consider the following steps:
+
+*Code Quality*
+Refactor Code: Organize the code into functions for better readability and reusability.
+Error Handling: Enhance error handling with specific exceptions and informative error messages.
+Logging: Implement logging to track the execution flow and any issues encountered.
+Code Formatting: Ensure consistent code formatting using a linter like pylint or black.
+*Documentation*
+Docstrings: Add detailed docstrings to all functions and classes.
+Markdown Cells: Ensure all markdown cells are clear and concise, providing adequate context and explanations.
+*Testing*
+Unit Tests: Write unit tests for all functions to ensure they work correctly.
+Integration Tests: Create integration tests to verify the workflow of the entire notebook.
+Test Data: Use mock data or a test database to ensure tests are reliable and repeatable.
+
+For the response,
+PROVIDE ONLY THE CODE FOR THE NOTEBOOK IN THE FORMAT I SPECIFY BELOW.
+THIS IS THE FORMAT YOU MUST USE FOR YOUR ANSWER. PLEASE DO NOT USE ANY OTHER FORMAT OR ADD YES OR NO OR ADD ANY INFO LIKE "HERE YOU GO" OUTSIDE OF THE FORMAT I SPECIFY BELOW. USE THE FOLLOWING FORMAT: {"notebook": "insert ipynb notebook content here"}
+
+Now here is the notebook you should productionize:
+
+----------------
+Maybe add a title to each notebook so it shows up in history as previous notebooks with a time and a name for the conversation?
+Can enable / disable history???
+
+In a future iteration, display the notebook and let people maybe mark it up or interact with a prompt to refine further? Look more into markup if possible?
+
+---------
+mostly good, just fix the return format
+
+-----
+first iteration, just "loading", and then download?
+Fix upload notebook selction
+Fix home icon
+
+but can start sharing probably without figuring out next part in too much detail and start iterating on it?
+
+Figure out cost of this, so can decide if based on usage or what, translate that to easy user metric.
+3 tiers? Free => One per month? Other is mid tier with some usage cap, then highest tier with very high cap?
+
+For v1 iteration, lets just make it free and get users
+ - I think a paid iteration needs to "pop" even more
+ - Integrating with stripe / payment will take a while. There are other projects to try.
+ - To achieve above, eliminate pricing section, just a CTA to "Join to get started"
+-------
+
+what to add on home page? Gifs? Example notebooks?
+more visual difference needed between logged in dashboard and home page
+
+------
+COGS examples research
+
+------
+https://www.reddit.com/r/dataengineering/comments/1em91qw/favorite_notebook_solutions/
+
+--------
+# jupyter plugins
+https://jupyterlab.readthedocs.io/en/stable/extension/extension_dev.html
+https://github.com/jupyterlab/jupyter-ai
+
+# chrome plugins
+https://github.com/visualpython/visualpython
+https://github.com/imvladikon/jupyter-notebook-viewer
+https://github.com/ideonate/metis
+https://github.com/naraB/jupyter-notifier
+
+
+# rendering react notebooks in web
+https://github.com/microsoft/vscode-jupyter/wiki/React-WebViews:-Variable-Viewer,-Plot-Viewer,-and-Data-Viewer
+https://victordibia.com/blog/jupyter-notebooks-react/
+https://github.com/datalayer/jupyter-ui
+
+----
+OpenAI documentation and best practices with api
+- best api calls to make
+    read endpoints - chat completins looks best
+- way to ensure output format
+    Structure output true with function calling, provide schema, will conform to that schema, your function is to download / fetch data as notebook?
+    https://platform.openai.com/docs/guides/structured-outputs/introduction
+- answer: do i need to use assistant?
+    read endpoints
+- calculate tokens - https://platform.openai.com/docs/advanced-usage/managing-tokens
+- retention / security?
+
+- moderation guide: https://platform.openai.com/docs/guides/moderation => Do i need this? Seems particularly well suited to identify for moderation content, not this project
+- function calling: openai will call functions: https://platform.openai.com/docs/guides/function-calling Model generates parameters for your function to use
+- chat endpoint
+    - set prompt in the system message
+    - every response includes a finish_reason. Look for stop for success. lenght means incomplete, function_call means calling function
+    - has json mode, but structured output is better for us
+- assistants 
+    - i cant quite tell if i need assistants, threads look important, better context and retention. many in parallel can be supported
+    - maybe if actively iterating in a notebook?
+- batch, sendy asnch requests for 50% lower costs, with 24 hour turnaround time
+-----
+SEO terms and search
+
+-----------------
+- Add name to user profile?
+- Add profile page? => Where we can add billing later on?
+- Add contact page
+- Fix links on home page
+- Remove pricing section
+- Two pictures / gifs on home page
+- Replace favicon

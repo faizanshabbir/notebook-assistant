@@ -101,7 +101,7 @@ export default function Dashboard() {
     setNotebook("");
     try {
       const response = await fetchWithTimeout(
-        '/api/upload', {
+        '/api/upload/claude', {
           method: 'POST',
           body: formData,
         },
